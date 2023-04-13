@@ -109,9 +109,11 @@ router.get("/api/posts/:id", async (req, res) => {
   }
 });
 
-router.get("/api/all_posts", async (req, res) => {
+router.get("/api/all_posts", auth, async (req, res) => {
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find({ _id: req.user_id }).sort({
+      createdAt: "asc",
+    });
     const finalPosts = posts.map((post) => {
       const temp = {
         id: post._id,
@@ -123,6 +125,7 @@ router.get("/api/all_posts", async (req, res) => {
       };
       return temp;
     });
+
     res.status(200).send(finalPosts);
   } catch (e) {
     res.status(500).send(e);
